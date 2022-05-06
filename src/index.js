@@ -1,4 +1,6 @@
 import './css/styles.css';
+import countryTpl from './templates/country.hbs'
+import countriesListTpl from "./templates/contriesList.hbs"
 import fetchCountries from "./fetchCountries";
 import Notiflix from 'notiflix';
 
@@ -10,16 +12,23 @@ const countryInfo = document.querySelector(".country-info");
 
 const DEBOUNCE_DELAY = 300;
 
-countrySearch.addEventListener("input", debounce(onCountrySearchInput, DEBOUNCE_DELAY));
+const clearMarkup = () => {
+    countryInfo.innerHTML = "";
+    countryList.innerHTML = "";
+}
 
-function onCountrySearchInput(event){
-    
+const searchValueLengthValidation = event => {
+    if(event.target.value.trim() === "") {
+        clearMarkup();
+        return;
+    }
+}
+
+const onCountrySearchInput = event => {
+    searchValueLengthValidation(event);
+
     fetchCountries(event.target.value.trim())
     .then((countries) => {
-        if(event.target.value.trim() === "") {
-            clearMarkup();
-            return;
-        }
         if (countries.length > 10) {
             clearMarkup();
             Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
@@ -36,24 +45,11 @@ function onCountrySearchInput(event){
         return;
     }
     )
-    .catch((error) => Notiflix.Notify.failure('Oops, there is no country with that name.'));
+    .catch(error => error);
 }
 
-function generateCountryMarkup(countries) {
-    return countries.map(country => {
-        return `<div><img width="50" height="50" = src="${country.flags.svg}" alt="flag">
-        \<span class="country__official">${country.name.official}</span><p><b>Capital: </b> ${country.capital}</p><p><b>Population: </b> ${country.population}</p><p><b>Languages: </b> ${Object.values(country.languages)}</p></div>`
-    }).join("");
-}
+const generateCountryMarkup = countries => countries.map(countryTpl).join("");
 
-function generateCountryListMarkup(countries) {
-    return countries.map(country => {
-        return `<li><img width="50" height="50" = src="${country.flags.svg}" alt="flag">
-        \<p class="country__official">${country.name.official}</p></li>`
-    }).join("");
-}
+const generateCountryListMarkup = countries => countries.map(countriesListTpl).join("");
 
-function clearMarkup() {
-    countryInfo.innerHTML = "";
-    countryList.innerHTML = "";
-}
+countrySearch.addEventListener("input", debounce(onCountrySearchInput, DEBOUNCE_DELAY));
