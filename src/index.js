@@ -29,18 +29,16 @@ const onCountrySearchInput = event => {
 
     fetchCountries(event.target.value.trim())
     .then((countries) => {
+        clearMarkup();
         if (countries.length > 10) {
-            clearMarkup();
             Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
             return;
         }
         else if (countries.length > 1) {
-            clearMarkup();
             countryList.insertAdjacentHTML('beforeend', generateCountryListMarkup(countries));
             return;
         }
         
-        clearMarkup();
         countryInfo.insertAdjacentHTML('beforeend', generateCountryMarkup(countries));
         return;
     }
