@@ -46,8 +46,9 @@ const onCountrySearchInput = event => {
     .catch(error => error);
 }
 
-const generateCountryMarkup = countries => countries.map(countryTpl).join("");
+const generateCountryMarkup = country => countryTpl(country);
 
-const generateCountryListMarkup = countries => countries.map(countriesListTpl).join("");
+const generateCountryListMarkup = countries => countriesListTpl(countries);
+
 
 countrySearch.addEventListener("input", debounce(onCountrySearchInput, DEBOUNCE_DELAY));
